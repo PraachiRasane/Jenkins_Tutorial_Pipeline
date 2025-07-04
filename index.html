@@ -1,0 +1,2192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CipherPro | Enterprise-Grade Hill Cipher Tool</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap">
+    <style>
+        :root {
+            /* Common colors */
+            --primary-color: #ff0000;
+            --accent-color: #ff3333;
+            --success-color: #ff3333;
+            
+            /* Dark theme (default) */
+            --secondary-color: #0f0f0f;
+            --light-color: #f9fafb;
+            --dark-color: #000000;
+            --neutral-color: #64748b;
+            --border-color: #2a2a2a;
+            --card-bg: #121212;
+            --input-bg: #1e1e1e;
+            --text-muted: #9ca3af;
+            --text-dark: #171717;
+            --feature-card-bg: #0a0a0a;
+            --result-bg: #121212;
+            --result-text: #e2e8f0;
+            --visualizer-border: #333;
+            --visualizer-text: #e2e8f0;
+            --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.7), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
+            --glow-effect: 0 0 15px #ff0000;
+            --body-bg: #000000;
+            --footer-bg: #0f0f0f;
+            --header-bg: #0f0f0f;
+            --dropdown-bg: #1a1a1a;
+            --dropdown-hover: #2a2a2a;
+        }
+        
+        /* Light theme */
+        [data-theme="light"] {
+            --secondary-color: #f0f0f0;
+            --light-color: #333333;
+            --dark-color: #ffffff;
+            --neutral-color: #64748b;
+            --border-color: #d1d5db;
+            --card-bg: #ffffff;
+            --input-bg: #f5f5f5;
+            --text-muted: #64748b;
+            --text-dark: #171717;
+            --feature-card-bg: #f9fafb;
+            --result-bg: #f5f5f5;
+            --result-text: #333333;
+            --visualizer-border: #d1d5db;
+            --visualizer-text: #333333;
+            --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --glow-effect: 0 0 15px rgba(255, 0, 0, 0.3);
+            --body-bg: #ffffff;
+            --footer-bg: #f0f0f0;
+            --header-bg: #f0f0f0;
+            --dropdown-bg: #ffffff;
+            --dropdown-hover: #f5f5f5;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        /* Apply longer transition when actively changing themes */
+        .theme-transition * {
+            transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease !important;
+        }
+        
+        body {
+            background-color: var(--body-bg);
+            color: var(--light-color);
+            line-height: 1.6;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background-color: var(--header-bg);
+            color: var(--light-color);
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            position: relative;
+            z-index: 1000;
+        }
+        
+        header > .container {
+            padding-left: 0;
+            padding-right: 0;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
+        
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-left: 0;
+        }
+        
+        .navbar-center {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+            margin-right: 1.5rem;
+        }
+        
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-right: 0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .nav-links a {
+            color: var(--light-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s, transform 0.2s;
+            padding: 8px 12px;
+            border-radius: 6px;
+            position: relative;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary-color);
+            transform: translateY(-1px);
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease, left 0.3s ease;
+        }
+        
+        .nav-links a:hover::after {
+            width: 80%;
+            left: 10%;
+        }
+        
+        /* User Account Section */
+        .user-account {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 50px;
+            background-color: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .user-profile:hover {
+            background-color: rgba(255, 0, 0, 0.15);
+            border-color: rgba(255, 0, 0, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 0, 0, 0.2);
+        }
+        
+        .user-icon {
+            width: 32px;
+            height: 32px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .username {
+            font-weight: 600;
+            color: var(--light-color);
+            font-size: 0.9rem;
+        }
+        
+        .dropdown-arrow {
+            color: var(--light-color);
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .user-profile.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+        
+        /* Dropdown Menu */
+        .user-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background-color: var(--dropdown-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1001;
+        }
+        
+        .user-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .dropdown-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            text-align: center;
+        }
+        
+        .dropdown-user-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .dropdown-user-avatar {
+            width: 48px;
+            height: 48px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .dropdown-username {
+            font-weight: 600;
+            color: var(--light-color);
+            font-size: 1rem;
+        }
+        
+        .dropdown-email {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        .dropdown-menu {
+            list-style: none;
+            padding: 8px;
+            margin: 0;
+        }
+        
+        .dropdown-item {
+            margin: 0;
+        }
+        
+        .dropdown-item a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--light-color);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .dropdown-item a:hover {
+            background-color: var(--dropdown-hover);
+            color: var(--primary-color);
+            transform: translateX(4px);
+        }
+        
+        .dropdown-item i {
+            font-size: 1rem;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .dropdown-divider {
+            height: 1px;
+            background-color: var(--border-color);
+            margin: 8px 16px;
+        }
+        
+        .logout-item a {
+            color: #ff4444;
+        }
+        
+        .logout-item a:hover {
+            background-color: rgba(255, 68, 68, 0.1);
+            color: #ff4444;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, #cc0000 0%, #cc0000 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgcGF0dGVyblRyYW5zZm9ybT0icm90YXRlKDQ1KSI+PHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9Im5vbmUiLz48cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDMpIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI3BhdHRlcm4pIi8+PC9zdmc+');
+            opacity: 0.5;
+        }
+        
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 2rem auto;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .main {
+            padding: 3rem 0;
+        }
+        
+        .cipher-section {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.8rem;
+            color: var(--light-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+            display: inline-block;
+            font-weight: 600;
+        }
+        
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        textarea, input[type="text"], select {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border 0.3s, box-shadow 0.3s, background-color 0.3s;
+            background-color: var(--input-bg);
+            color: var(--light-color);
+        }
+        
+        textarea:focus, input[type="text"]:focus, select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: var(--glow-effect);
+        }
+        
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+        
+        .input-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .input-row .input-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+        
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn:hover {
+            background-color: #cc0000;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #1f1f1f;
+        }
+        
+        .btn-accent {
+            background-color: var(--accent-color);
+        }
+        
+        .btn-accent:hover {
+            background-color: #ff4d4d;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .result-section {
+            margin-top: 2rem;
+            display: none;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        .result-box {
+            background-color: var(--result-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 20px;
+            min-height: 120px;
+            margin-bottom: 1.5rem;
+            white-space: pre-wrap;
+            word-break: break-all;
+            color: var(--result-text);
+            font-family: 'Consolas', 'Monaco', monospace;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            max-height: 300px;
+        }
+        
+        .copy-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 3rem;
+        }
+        
+        .feature-card {
+            background-color: var(--feature-card-bg);
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            padding: 2rem;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+            border: 1px solid var(--border-color);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--glow-effect);
+            background-color: var(--secondary-color);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .feature-title {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: var(--light-color);
+        }
+          .shift-visualization {
+            overflow-x: auto;
+            margin: 2rem 0;
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(255, 0, 0, 0.02) 100%);
+            border-radius: 16px;
+            border: 2px solid var(--border-color);
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+        }
+        
+        .shift-visualization:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(255, 0, 0, 0.1);
+        }
+        
+        .visualization-guide {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            color: var(--light-color);
+            font-weight: 500;
+            padding: 1rem;
+            background: rgba(255, 0, 0, 0.08);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .visualization-info {
+            text-align: center;
+            margin-top: 2rem;
+            padding: 1.2rem;
+            font-size: 1rem;
+            color: var(--light-color);
+            background: linear-gradient(135deg, rgba(255, 0, 0, 0.1), rgba(255, 0, 0, 0.05));
+            border-radius: 12px;
+            border: 2px solid rgba(255, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.1);
+        }
+        
+        .visualization-info.active {
+            background: linear-gradient(135deg, rgba(255, 0, 0, 0.15), rgba(255, 0, 0, 0.08));
+            border-color: rgba(255, 0, 0, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(255, 0, 0, 0.15);
+        }
+        
+        /* Enhanced matrix and vector styling */
+        .matrix-step {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .matrix-step:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .step-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .step-number {
+            background: var(--primary-color);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .matrix-operation {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            padding: 1rem 0;
+        }
+        
+        .operation-symbol {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            min-width: 30px;
+            text-align: center;
+        }
+        
+        .matrix-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .matrix-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--light-color);
+            opacity: 0.8;
+        }
+        
+        .result-highlight {
+            background: linear-gradient(135deg, rgba(0, 255, 153, 0.1), rgba(0, 255, 153, 0.05));
+            border: 2px solid rgba(0, 255, 153, 0.3);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            text-align: center;
+        }
+        
+        .result-text {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #00ff99;
+            font-family: 'Consolas', monospace;
+        }
+        
+        .alphabet-map {
+            display: flex;
+            min-width: max-content;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        .alphabet-letter {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--visualizer-border);
+            font-weight: bold;
+            color: var(--visualizer-text);
+            background-color: var(--card-bg);
+            margin: 0 2px;
+            border-radius: 4px;
+            transition: transform 0.5s, background-color 0.5s, color 0.5s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        
+        .alphabet-letter.highlight {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+            z-index: 2;
+        }
+        
+        .alphabet-letter.input-highlight {
+            background-color: #ff0000;
+            color: white;
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 5px 20px rgba(255, 0, 0, 0.5);
+            z-index: 3;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 5px 15px rgba(255, 0, 0, 0.5); transform: translateY(-5px) scale(1.1); }
+            50% { box-shadow: 0 5px 25px rgba(255, 0, 0, 0.8); transform: translateY(-7px) scale(1.15); }
+            100% { box-shadow: 0 5px 15px rgba(255, 0, 0, 0.5); transform: translateY(-5px) scale(1.1); }
+        }
+        
+        /* Fade effect for the lights */
+        .fade-lights {
+            filter: brightness(0.7);
+            transition: filter 1.2s ease-in-out;
+        }
+        
+        .fade-lights .alphabet-letter {
+            filter: brightness(0.8);
+        }
+        
+        .fade-lights .alphabet-letter.input-highlight {
+            filter: brightness(1.2);
+        }
+        
+        .arrow {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin: 0.5rem 0;
+            text-align: center;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .arrow i {
+            animation: arrowPulse 1.5s infinite;
+        }
+        
+        @keyframes arrowPulse {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(5px); }
+            100% { transform: translateY(0); }
+        }
+        
+        .footer-content {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    width: 100%;
+    max-width: 100%;
+    justify-content: space-between;
+}
+
+.footer-section {
+    min-width: 200px;
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.footer-section:nth-child(1) {
+    grid-column: 1 / 2;
+    justify-self: start;
+    text-align: left;
+}
+
+.footer-section:nth-child(2) {
+    grid-column: 2 / 3;
+    justify-self: center;
+    text-align: center;
+    align-items: center;
+}
+
+.footer-section:nth-child(3) {
+    grid-column: 3 / 4;
+    justify-self: end;
+    text-align: right;
+    align-items: flex-end;
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 2rem;
+    margin-top: 2rem;
+    border-top: 1px solid var(--border-color);
+    width: 100%;
+    grid-column: 1 / -1; 
+}
+
+
+footer .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.footer-title {
+    align-self: flex-start;
+    position: relative;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.footer-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 2px;
+    background-color: var(--primary-color);
+}
+
+.footer-section:nth-child(2) .footer-title {
+    align-self: center;
+}
+
+.footer-section:nth-child(2) .footer-title::after {
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.footer-section:nth-child(3) .footer-title {
+    align-self: flex-end;
+}
+
+.footer-section:nth-child(3) .footer-title::after {
+    left: auto;
+    right: 0;
+}
+
+.footer-links {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.footer-section:nth-child(2) .footer-links {
+    align-items: center;
+}
+
+.footer-section:nth-child(3) .footer-links {
+    align-items: flex-end;
+}
+
+.footer-links a {
+    color: var(--light-color);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    margin-bottom: 10px;
+    padding: 4px 0;
+    display: block;
+}
+
+.footer-links a:hover {
+    color: var(--primary-color);
+    transform: translateX(5px);
+}
+
+.footer-section:nth-child(3) .footer-links a:hover {
+    transform: translateX(-5px);
+}
+
+.social-links {
+    display: flex;
+    gap: 20px;
+    margin-top: 1.5rem;
+    justify-content: flex-start;
+}
+
+.footer-section:nth-child(2) .social-links {
+    justify-content: center;
+}
+
+.footer-section:nth-child(3) .social-links {
+    justify-content: flex-end;
+}
+
+.social-links a {
+    color: var(--light-color);
+    font-size: 1.5rem;
+    transition: color 0.3s;
+}
+
+.social-links a:hover {
+    color: var(--primary-color);
+}
+
+/* Media Query Responsive Layout */
+@media (max-width: 768px) {
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    .footer-section:nth-child(1),
+    .footer-section:nth-child(2),
+    .footer-section:nth-child(3) {
+        grid-column: 1;
+        justify-self: center;
+        width: 100%;
+        text-align: center;
+        align-items: center;
+    }
+    
+    .footer-section {
+        margin-bottom: 2rem;
+    }
+    
+    .footer-title,
+    .footer-section:nth-child(3) .footer-title {
+        align-self: center;
+    }
+    
+    .footer-title::after,
+    .footer-section:nth-child(3) .footer-title::after {
+        left: 50%;
+        transform: translateX(-50%);
+        right: auto;
+    }
+    
+    .footer-links,
+    .footer-section:nth-child(3) .footer-links {
+        align-items: center;
+    }
+    
+    .footer-links a:hover,
+    .footer-section:nth-child(3) .footer-links a:hover {
+        transform: translateY(-3px);
+    }
+    
+    .social-links,
+    .footer-section:nth-child(3) .social-links {
+        justify-content: center;
+    }
+}
+
+        
+        .info-section {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            padding: 2rem;
+            margin-top: 3rem;
+            border: 1px solid var(--border-color);
+        }
+        
+        .info-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+        
+        .info-text {
+            flex: 2;
+            min-width: 300px;
+        }
+        
+        .info-image {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .info-image img {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+        
+        .notification {
+            padding: 12px 18px;
+            margin-bottom: 25px;
+            border-radius: 6px;
+            display: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            position: relative;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            border-left: 4px solid transparent;
+            font-size: 0.9rem;
+            opacity: 1;
+            transform: translateY(0);
+            background-color: var(--card-bg);
+        }
+        
+        .notification.success {
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+            background-color: rgba(255, 0, 0, 0.05);
+        }
+        
+        .notification.error {
+            color: #ff0000;
+            border-left-color: #ff0000;
+            background-color: rgba(255, 0, 0, 0.1);
+        }
+        
+        .theme-toggle-buttons {
+            position: fixed;
+            top: 5%;
+            right: 0px;
+            transform: translateY(-50%);
+            z-index: 1000;
+
+        }
+        
+        .theme-toggle-buttons button {
+            padding: 10px;
+            border: 1px solid #ff0000;
+            cursor: pointer;
+            border-top-left-radius: 50%;
+            border-bottom-left-radius: 50%;
+            background-color:#000000;
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            
+        }
+        
+        .theme-toggle-buttons button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(255, 0, 0, 0.4);
+        }
+        
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 180px;
+            background-color: rgba(20, 20, 20, 0.9);
+            color: #fff;
+            text-align: center;
+            border-radius: 4px;
+            padding: 8px 10px;
+            position: absolute;
+            z-index: 100;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -90px;
+            opacity: 0;
+            transition: opacity 0.2s, transform 0.2s;
+            transform: translateY(10px);
+            font-size: 0.75rem;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 0, 0, 0.15);
+        }
+
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: rgba(20, 20, 20, 0.9) transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .btn-text {
+            margin-right: 10px;
+        }
+          /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .input-row {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .navbar-left, .navbar-center, .navbar-right {
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+            }
+            
+            .navbar-center {
+                order: 2;
+            }
+            
+            .navbar-right {
+                order: 3;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 1rem;
+            }
+            
+            .user-profile {
+                padding: 6px 12px;
+            }
+            
+            .username {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .footer-section {
+                margin-bottom: 2rem;
+                max-width: 100%;
+            }
+            
+            .user-dropdown {
+                right: -50px;
+                min-width: 250px;
+            }
+            
+            /* Visualization responsive adjustments */
+            .shift-visualization {
+                padding: 1rem;
+                margin: 1.5rem 0;
+            }
+            
+            .matrix-operation {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: center;
+            }
+            
+            .operation-symbol {
+                font-size: 1.5rem;
+                transform: rotate(90deg);
+            }
+            
+            .matrix-step {
+                padding: 1rem;
+                margin: 1rem 0;
+            }
+            
+            .step-title {
+                font-size: 1rem;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .visualization-guide {
+                font-size: 0.9rem;
+                padding: 0.8rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .matrix-operation > div {
+                max-width: 100%;
+                overflow-x: auto;
+            }
+            
+            .shift-visualization h3 {
+                font-size: 1.3rem;
+            }
+            
+            .step-title {
+                font-size: 0.9rem;
+            }
+        }
+        
+        /* Close dropdown when clicking outside */
+        .dropdown-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: transparent;
+            z-index: 999;
+            display: none;
+        }
+        
+        .dropdown-overlay.show {
+            display: block;
+        }
+        /* Algorithm Navigation Bar Styles */
+        .algorithm-nav {
+            display: flex;
+            align-items: center;
+            justify-content:space-between;
+            background-color: var(--header-bg);
+            padding: 1rem ;
+            font-size: 1rem;
+            font-weight: 600;
+            user-select: none;
+            border-top: 0.5px solid #ff0000;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .algorithm-nav-item {
+            flex: 0 0 auto;
+            text-align: center;
+            color: var(--light-color);
+            text-decoration: none;
+            padding: 0 12px;
+            transition: color 0.3s ease, border-bottom 0.3s ease;
+            border-bottom: 2px solid transparent;
+            display: block;
+            white-space: nowrap;
+        }
+        .algorithm-nav-item:hover
+        {
+            color:#ff0000;
+            border-bottom:2px solid #ff0000;
+        }
+        
+        .matrix-visual table {
+            margin: 0 auto 1rem auto;
+            border-collapse: collapse;
+            background: #181818;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(255,0,0,0.08);
+        }        .matrix-visual td {
+            border: 2px solid #ff0000;
+            padding: 10px 18px;
+            font-size: 1.1rem;
+            color: #fff;
+            background: #222;
+            text-align: center;
+            min-width: 32px;
+            border-radius: 4px;
+            font-weight: 600;
+            box-shadow: 0 0 8px rgba(255, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .vector-visual {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+        .vector-visual .vector-block {
+            background: #181818;
+            border: 1.5px solid #ff3333;
+            border-radius: 6px;
+            padding: 8px 16px;
+            color: #fff;
+            font-family: 'Consolas', monospace;
+            font-size: 1.1rem;
+            margin: 2px 0;
+            box-shadow: 0 1px 4px rgba(255,0,0,0.07);
+        }
+        #matrix-input-grid {
+            display: inline-block;
+            margin: 0.5rem 0;
+        }        #matrix-input-grid input[type="text"] {
+            width: 48px;
+            height: 38px;
+            margin: 2px;
+            text-align: center;
+            font-size: 1.1rem;
+            border: 2px solid #ff0000;
+            border-radius: 4px;
+            background: #181818;
+            color: #fff;
+            font-weight: 600;
+            outline: none;
+            transition: all 0.2s;
+            box-shadow: 0 0 6px rgba(255, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        #matrix-input-grid input[type="text"]:focus {
+            border: 2px solid #ff0000;
+            background: #222;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <!-- Dropdown overlay for mobile -->
+    <div class="dropdown-overlay" id="dropdown-overlay"></div>
+
+    <header>
+        <div class="container">
+            <div class="navbar">
+                <div class="navbar-left">
+                    <div class="logo">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>CipherPro</span>
+                    </div>
+                </div>
+                
+                <div class="navbar-center">
+                    <ul class="nav-links">
+                        <li><a href="#home">Home</a></li>
+                        <!-- <li><a href="#tools">Tools</a></li> -->
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#help">Help</a></li>
+                    </ul>
+                </div>
+                
+            <div class="navbar-right">
+                <div class="user-account">
+                    <div class="user-profile" id="user-profile">
+                        <div class="user-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <span class="username">Shravani</span>
+                        <i class="fas fa-chevron-down dropdown-arrow"></i>
+                    </div>
+                    
+                    <div class="user-dropdown" id="user-dropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-info">
+                                <div class="dropdown-user-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="dropdown-username">Shravani</div>
+                                <div class="dropdown-email">shravani@cipherpro.com</div>
+                            </div>
+                        </div>
+                        
+                        <ul class="dropdown-menu">
+                            <li class="dropdown-item">
+                                <a href="#profile">
+                                    <i class="fas fa-user-circle"></i>
+                                    My Profile
+                                </a>
+                            </li>
+                            <li class="dropdown-item">
+                                <a href="#account">
+                                    <i class="fas fa-cog"></i>
+                                    Account Settings
+                                </a>
+                            </li>
+                            <li class="dropdown-item">
+                                <a href="#billing">
+                                    <i class="fas fa-credit-card"></i>
+                                    Billing & Plans
+                                </a>
+                            </li>
+                            <li class="dropdown-item">
+                                <a href="#security">
+                                    <i class="fas fa-shield-alt"></i>
+                                    Security
+                                </a>
+                            </li>
+                        </ul>
+                        
+                        <div class="dropdown-divider"></div>
+                        
+                        <ul class="dropdown-menu">
+                            <li class="dropdown-item">
+                                <a href="#help-support">
+                                    <i class="fas fa-question-circle"></i>
+                                    Help & Support
+                                </a>
+                            </li>
+                            <li class="dropdown-item logout-item">
+                                <a href="#logout" id="logout-btn">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    Logout
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="algorithm-nav-container">
+        <nav class="algorithm-nav" aria-label="Algorithm navigation">
+            <i class="fa-solid fa-chevron-left" style="color: #ffffff;"></i>
+            
+            <a href="#caesar" class="algorithm-nav-item">Caesar Cipher</a>
+            <a href="#hill" class="algorithm-nav-item">Hill Cipher</a>
+            <a href="#playfair" class="algorithm-nav-item">Playfair Cipher</a>
+            <a href="#vigenere" class="algorithm-nav-item">Vigenère Cipher</a>
+            <a href="#aes" class="algorithm-nav-item">AES</a>
+            <a href="#des" class="algorithm-nav-item">DES</a>
+            <a href="#rc5" class="algorithm-nav-item">RC5</a>
+            <a href="#md5" class="algorithm-nav-item">MD5</a>
+            <a href="#sha512" class="algorithm-nav-item">SHA-512</a>
+            <a href="#hmac" class="algorithm-nav-item">HMAC</a>
+            <i class="fa-solid fa-chevron-right" style="color: #ffffff;"></i>
+        </nav>
+    </div>
+        </div>
+    </header>
+
+    <section class="hero" id="home">
+        <div class="container">
+            <h1>Hill Cipher Solution</h1>
+            <p>Secure your sensitive communications with military-grade Hill cipher encryption. Our enterprise solution provides advanced encryption and decryption capabilities with comprehensive security controls and audit capabilities.</p>
+        </div>
+    </section>
+    
+    <div class="theme-toggle-buttons">
+        <button id="theme-toggle-btn" aria-label="Toggle light and dark mode" title="Toggle light and dark mode" class="btn">
+            <i id="theme-toggle-icon" class="fas fa-moon"></i>
+        </button>
+    </div>
+
+    <main class="main container" id="tools">
+        <div class="notification success" id="notification"></div>
+        
+        <section class="cipher-section">
+            <h2 class="section-title">Hill Cipher Tool</h2>
+            <div class="input-group">
+                <label for="message">Message</label>
+                <textarea id="message" placeholder="Enter your message here..."></textarea>
+            </div>
+            <div class="input-group">
+                <label for="key-input-method">Key Input Method</label>
+                <select id="key-input-method">
+                    <option value="matrix">Enter Key Matrix</option>
+                    <option value="word">Enter Key Word</option>
+                </select>
+            </div>
+            <div class="input-row" id="matrix-row">
+                <div class="input-group">
+                    <label for="matrix-dimension">Matrix Dimension</label>
+                    <select id="matrix-dimension">
+                        <option value="2">2 x 2</option>
+                        <option value="3">3 x 3</option>
+                    </select>
+                </div>
+            </div>
+            <div class="input-group" id="matrix-group">
+                <label>Key Matrix</label>
+                <div id="matrix-input-grid"></div>
+            </div>
+            <div class="input-group" id="word-group" style="display:none;">
+                <label for="key-word">Key Word</label>
+                <input type="text" id="key-word" placeholder="Enter key word (e.g. SECRET)" />
+            </div>
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="operation">Operation</label>
+                    <select id="operation">
+                        <option value="encrypt">Encrypt</option>
+                        <option value="decrypt">Decrypt</option>
+                    </select>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button id="process-btn" class="btn tooltip">
+                    <span class="btn-text">Process </span>
+                    <span class="btn-icon"><i class="fas fa-cog"></i></span>
+                    <span class="tooltiptext">Run the cipher operation</span>
+                </button>
+                <button id="clear-btn" class="btn btn-secondary tooltip">
+                    <span class="btn-text">Clear</span>
+                    <span class="btn-icon"><i class="fas fa-eraser"></i></span>
+                    <span class="tooltiptext">Reset all fields</span>
+                </button>
+            </div>
+            <div class="result-section" id="result-section">
+                <h3>Result</h3>
+                <div class="result-box" id="result-output"></div>
+                <button id="copy-btn" class="btn btn-accent copy-btn tooltip">
+                    <i class="fas fa-copy"></i> Copy to Clipboard
+                    <span class="tooltiptext">Copy result to clipboard</span>
+                </button>
+            </div>            <div class="shift-visualization" id="shift-visualization">
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <h3 style="color: var(--primary-color); font-size: 1.6rem; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                        <i class="fas fa-calculator"></i>
+                        Hill Cipher Matrix Visualization
+                    </h3>
+                    <div class="visualization-guide">
+                        <i class="fas fa-info-circle"></i>
+                        Watch how your message is transformed through matrix multiplication in real-time
+                    </div>
+                </div>
+                <div id="hill-key-matrix" class="matrix-visual"></div>
+                <div id="hill-message-vectors" class="vector-visual"></div>
+                <div id="hill-result-vectors" class="vector-visual"></div>
+                <div id="visualization-info" class="visualization-info">
+                    <i class="fas fa-lightbulb"></i>
+                    Enter your message and click "Process" to see the step-by-step matrix multiplication
+                </div>
+            </div>
+        </section>
+        
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h3 class="feature-title">Secure Encryption</h3>
+                <p>Protect your messages with the classic Hill cipher encryption method, a foundational technique in cryptography.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-unlock"></i>
+                </div>
+                <h3 class="feature-title">Easy Decryption</h3>
+                <p>Decrypt messages that were encrypted using the Hill cipher with our intuitive decryption tool.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3 class="feature-title">Enterprise Security</h3>
+                <p>Built with enterprise-grade security standards, including secure processing and comprehensive audit logging.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3 class="feature-title">Advanced Analytics</h3>
+                <p>Perform matrix analysis and frequency studies to test the strength of your encrypted messages.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-eye"></i>
+                </div>
+                <h3 class="feature-title">Visual Learning</h3>
+                <p>Understand how the Hill cipher works with our interactive visualization of the matrix multiplication.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-desktop"></i>
+                </div>
+                <h3 class="feature-title">Cross-Platform</h3>
+                <p>Access our enterprise encryption tool from any device with a modern web browser. No installation required.</p>
+            </div>
+        </div>
+        
+        <section class="info-section" id="about">
+            <h2 class="section-title">About Hill Cipher</h2>
+            
+            <div class="info-content">
+                <div class="info-text">
+                    <p>The Hill cipher is a polygraphic substitution cipher based on linear algebra. It uses a square matrix as the key, and the encryption and decryption processes involve matrix multiplication and inversion.</p>
+                    <p>Developed by Lester S. Hill in 1929, this cipher was one of the first to use a matrix for encryption, allowing for more complex and secure encryption than simple substitution ciphers.</p>
+                    <p>In the Hill cipher, plaintext letters are converted to numerical vectors, which are then multiplied by the key matrix. The resulting vectors are converted back to letters to produce the ciphertext.</p>
+                    <p>For example, with a 2x2 key matrix and a block size of 2, the letters "HI" might be encrypted as "JG" if the key matrix is [[3, 2], [5, 7]]. The decryption process uses the inverse of the key matrix to retrieve the original message.</p>
+                    <p>The security of the Hill cipher depends on the size of the key matrix and the secrecy of the key. While it was a significant advancement in its time, the Hill cipher is vulnerable to modern cryptanalysis techniques and is not considered secure for modern applications.</p>
+                </div>
+                <div class="info-image">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Caesar_cipher_left_shift_of_3.svg/1200px-Caesar_cipher_left_shift_of_3.svg.png" alt="Hill Cipher Illustration">
+                </div>
+            </div>
+        </section>
+        
+        <section class="info-section" id="help">
+            <h2 class="section-title">How to Use</h2>
+            
+            <div class="info-content">
+                <div class="info-text">
+                    <ol>
+                        <li><strong>Enter Your Message:</strong> Type or paste the text you want to encrypt or decrypt in the message field.</li>
+                        <li><strong>Set Key Matrix:</strong> Enter the key matrix for encryption or decryption. Use a 2x2 or 3x3 matrix (e.g., "3 2 1 4" or "1 2 3 0 1 2 3 4 5").</li>
+                        <li><strong>Select Operation:</strong> Choose whether you want to encrypt or decrypt the message.</li>
+                        <li><strong>Process:</strong> Click the "Process" button to perform the operation.</li>
+                        <li><strong>View Result:</strong> The result will appear in the result box below. You can copy it to your clipboard using the "Copy to Clipboard" button.</li>
+                    </ol>
+                    <br>
+                    <p><strong>Note:</strong> The Hill cipher requires a valid key matrix for encryption and decryption. The matrix elements should be integers, and the matrix must be invertible modulo 26 for decryption to work. All operations are logged for security auditing purposes.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 class="footer-title">CipherPro</h3>
+                    <p>Professional cryptographic tools for educational and practical purposes. Learn about encryption while securing your communications.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3 class="footer-title">Quick Links</h3>
+                    <div class="footer-links">
+                        <a href="#home">Home</a>
+                        <a href="#tools">Cipher Tool</a>
+                        <a href="#about">About Hill Cipher</a>
+                        <a href="#help">How to Use</a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3 class="footer-title">Resources</h3>
+                    <div class="footer-links">
+                        <a href="#">Cryptography Basics</a>
+                        <a href="#">History of Encryption</a>
+                        <a href="#">Modern Encryption Methods</a>
+                        <a href="#">Security Best Practices</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 CipherPro. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+    const messageInput = document.getElementById('message');
+    const matrixDimensionSelect = document.getElementById('matrix-dimension');
+    const matrixInputGrid = document.getElementById('matrix-input-grid');
+    const operationSelect = document.getElementById('operation');
+    const processBtn = document.getElementById('process-btn');
+    const clearBtn = document.getElementById('clear-btn');
+    const resultSection = document.getElementById('result-section');
+    const resultOutput = document.getElementById('result-output');
+    const copyBtn = document.getElementById('copy-btn');
+    const notification = document.getElementById('notification');
+    const hillKeyMatrix = document.getElementById('hill-key-matrix');
+    const hillMessageVectors = document.getElementById('hill-message-vectors');
+    const hillResultVectors = document.getElementById('hill-result-vectors');
+    const visualizationInfo = document.getElementById('visualization-info');
+    const keyInputMethod = document.getElementById('key-input-method');
+    const matrixRow = document.getElementById('matrix-row');
+    const matrixGroup = document.getElementById('matrix-group');
+    const wordGroup = document.getElementById('word-group');
+    const keyWordInput = document.getElementById('key-word');
+    
+            // User dropdown functionality
+            const userProfile = document.getElementById('user-profile');
+            const userDropdown = document.getElementById('user-dropdown');
+            const dropdownOverlay = document.getElementById('dropdown-overlay');
+            const logoutBtn = document.getElementById('logout-btn');
+            
+            // Track process button clicks for fade effect
+            let processClickCount = 0;
+            
+            // Theme Toggle Functionality
+            const themeToggleBtn = document.getElementById('theme-toggle-btn');
+            const themeToggleIcon = document.getElementById('theme-toggle-icon');
+            
+            function setTheme(isDark) {
+                if (isDark) {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    localStorage.setItem('theme', 'dark');
+                    themeToggleIcon.classList.remove('fa-sun');
+                    themeToggleIcon.classList.add('fa-moon');
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                    localStorage.setItem('theme', 'light');
+                    themeToggleIcon.classList.remove('fa-moon');
+                    themeToggleIcon.classList.add('fa-sun');
+                }
+            }
+            
+            // Check for saved theme preference or system preference
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+            
+            if (savedTheme === 'light') {
+                setTheme(false);
+            } else if (savedTheme === 'dark' || prefersDarkScheme.matches) {
+                setTheme(true);
+            } else {
+                setTheme(true); // Default to dark theme
+            }
+            
+            // Theme toggle button event listener
+            themeToggleBtn.addEventListener('click', function() {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const isDark = currentTheme === 'dark';
+                setTheme(!isDark);
+                
+                // Add transition class to all elements for smooth transition
+                document.body.classList.add('theme-transition');
+                setTimeout(() => {
+                    document.body.classList.remove('theme-transition');
+                }, 1000);
+                
+                showNotification(!isDark ? 'Dark mode activated' : 'Light mode activated', 'success');
+            });
+            
+            // User dropdown functionality
+            userProfile.addEventListener('click', function(e) {
+                e.stopPropagation();
+                toggleDropdown();
+            });
+            
+            dropdownOverlay.addEventListener('click', function() {
+                closeDropdown();
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!userProfile.contains(e.target) && !userDropdown.contains(e.target)) {
+                    closeDropdown();
+                }
+            });
+            
+            function toggleDropdown() {
+                const isOpen = userDropdown.classList.contains('show');
+                if (isOpen) {
+                    closeDropdown();
+                } else {
+                    openDropdown();
+                }
+            }
+            
+            function openDropdown() {
+                userDropdown.classList.add('show');
+                userProfile.classList.add('active');
+                dropdownOverlay.classList.add('show');
+            }
+            
+            function closeDropdown() {
+                userDropdown.classList.remove('show');
+                userProfile.classList.remove('active');
+                dropdownOverlay.classList.remove('show');
+            }
+            
+            // Logout functionality
+            logoutBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                showNotification('Logging out...', 'success');
+                closeDropdown();
+                
+                // Simulate logout process
+                setTimeout(() => {
+                    showNotification('Successfully logged out!', 'success');
+                    // Here you would typically redirect to login page
+                    // window.location.href = '/login';
+                }, 1000);
+            });
+            
+            function renderMatrixInput(size) {
+        let html = '<table>';
+        for (let i = 0; i < size; i++) {
+            html += '<tr>';
+            for (let j = 0; j < size; j++) {
+                html += `<td><input type="text" class="matrix-cell" data-row="${i}" data-col="${j}" value="${i===j?1:0}" /></td>`;
+            }
+            html += '</tr>';
+        }
+        html += '</table>';
+        matrixInputGrid.innerHTML = html;
+    }
+    function getMatrixFromInputs(size) {
+        let matrix = [];
+        for (let i = 0; i < size; i++) {
+            let row = [];
+            for (let j = 0; j < size; j++) {
+                let input = matrixInputGrid.querySelector(`input[data-row="${i}"][data-col="${j}"]`);
+                let val = parseInt(input.value, 10);
+                if (isNaN(val)) return null;
+                row.push(val);
+            }
+            matrix.push(row);
+        }
+        return matrix;
+    }
+    matrixDimensionSelect.addEventListener('change', function() {
+        renderMatrixInput(parseInt(this.value, 10));
+    });
+    renderMatrixInput(parseInt(matrixDimensionSelect.value, 10));
+    function modInverse(a, m) {
+        a = ((a % m) + m) % m;
+        for (let x = 1; x < m; x++) {
+            if ((a * x) % m === 1) return x;
+        }
+        return null;
+    }
+    function matrixDeterminant(matrix) {
+        if (matrix.length === 2) {
+            return (matrix[0][0]*matrix[1][1] - matrix[0][1]*matrix[1][0]);
+        } else if (matrix.length === 3) {
+            let m = matrix;
+            return (
+                m[0][0]*(m[1][1]*m[2][2] - m[1][2]*m[2][1]) -
+                m[0][1]*(m[1][0]*m[2][2] - m[1][2]*m[2][0]) +
+                m[0][2]*(m[1][0]*m[2][1] - m[1][1]*m[2][0])
+            );
+        }
+        return null;
+    }
+    function matrixModInverse(matrix, modulus) {
+        let det = matrixDeterminant(matrix);
+        let detInv = modInverse(det, modulus);
+        if (detInv === null) return null;
+        let size = matrix.length;
+        let inv = [];
+        if (size === 2) {
+            inv = [
+                [matrix[1][1], -matrix[0][1]],
+                [-matrix[1][0], matrix[0][0]]
+            ];
+        } else if (size === 3) {
+            let m = matrix;
+            inv = [];
+            for (let i = 0; i < 3; i++) {
+                inv[i] = [];
+                for (let j = 0; j < 3; j++) {
+                    let sub = [];
+                    for (let r = 0; r < 3; r++) {
+                        if (r !== i) {
+                            let row = [];
+                            for (let c = 0; c < 3; c++) {
+                                if (c !== j) row.push(m[r][c]);
+                            }
+                            sub.push(row);
+                        }
+                    }
+                    let minor = sub[0][0]*sub[1][1] - sub[0][1]*sub[1][0];
+                    inv[i][j] = ((i+j)%2===0 ? 1 : -1) * minor;
+                }
+            }
+            inv = inv[0].map((_,i) => inv.map(row => row[i]));
+        }
+        for (let i = 0; i < size; i++) {
+            for (let j = 0; j < size; j++) {
+                inv[i][j] = ((inv[i][j] * detInv) % modulus + modulus) % modulus;
+            }
+        }
+        return inv;
+    }
+    function textToVectors(text, size) {
+        let clean = text.toUpperCase().replace(/[^A-Z]/g, '');
+        while (clean.length % size !== 0) clean += 'X';
+        let vectors = [];
+        for (let i = 0; i < clean.length; i += size) {
+            let vec = [];
+            for (let j = 0; j < size; j++) {
+                vec.push(clean.charCodeAt(i+j) - 65);
+            }
+            vectors.push(vec);
+        }
+        return {clean, vectors};
+    }
+    function vectorsToText(vectors) {
+        return vectors.map(vec => vec.map(n => String.fromCharCode(n+65)).join('')).join('');
+    }
+    function multiplyMatrixVector(matrix, vector, modulus) {
+        let result = [];
+        for (let i = 0; i < matrix.length; i++) {
+            let sum = 0;
+            for (let j = 0; j < vector.length; j++) {
+                sum += matrix[i][j] * vector[j];
+            }
+            result.push(((sum % modulus) + modulus) % modulus);
+        }
+        return result;
+    }
+    function hillCipher(text, keyMatrix, operation) {
+        let size = keyMatrix.length;
+        let modulus = 26;
+        let {clean, vectors} = textToVectors(text, size);
+        let matrix = keyMatrix;
+        if (operation === 'decrypt') {
+            matrix = matrixModInverse(keyMatrix, modulus);
+            if (!matrix) return null;
+        }
+        let resultVectors = vectors.map(vec => multiplyMatrixVector(matrix, vec, modulus));
+        return vectorsToText(resultVectors);
+    }    function matrixToHtml(matrix, highlightRow = -1, highlightCol = -1, highlightType = 'cell', vector = false) {
+        let html = '<table style="margin:0 auto; border-collapse: separate; border-spacing: 3px;">';
+        for (let i = 0; i < matrix.length; i++) {
+            html += '<tr>';
+            for (let j = 0; j < (vector ? 1 : matrix.length); j++) {
+                let highlight = false;
+                if (highlightType === 'row' && i === highlightRow) highlight = true;
+                if (highlightType === 'col' && j === highlightCol) highlight = true;
+                if (highlightType === 'cell' && i === highlightRow && j === highlightCol) highlight = true;
+                  let cellStyle = `
+                    padding: 12px 16px;
+                    font-size: 1.2em;
+                    font-weight: 600;
+                    text-align: center;
+                    min-width: 40px;
+                    border-radius: 8px;
+                    transition: all 0.3s ease;
+                    font-family: 'Consolas', monospace;
+                    border: 2px solid #ff0000;
+                    background: ${highlight ? '#ff3333' : '#222'};
+                    color: #fff;
+                    box-shadow: 0 0 8px rgba(255, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3);
+                `;
+                
+                html += `<td style="${cellStyle}">${matrix[i][j]}</td>`;
+            }
+            html += '</tr>';
+        }
+        html += '</table>';
+        return html;
+    }function visualizeHillCipher(text, keyMatrix, operation, result) {
+        const size = keyMatrix.length;
+        const modulus = 26;
+        const {clean, vectors} = textToVectors(text, size);
+        let usedMatrix = keyMatrix;
+        let vizHtml = '';
+        
+        // Header section with operation type
+        vizHtml += `<div style="text-align: center; margin-bottom: 2rem;">
+            <h3 style="color: var(--primary-color); font-size: 1.4rem; margin-bottom: 0.5rem;">
+                <i class="fas fa-${operation === 'encrypt' ? 'lock' : 'unlock'}"></i> 
+                Hill Cipher ${operation.charAt(0).toUpperCase() + operation.slice(1)}ion Process
+            </h3>
+            <p style="color: var(--light-color); opacity: 0.8;">Matrix size: ${size}×${size} | Input: "${text}"</p>
+        </div>`;
+        
+        // For decryption: show key matrix transformation
+        if (operation === 'decrypt') {
+            vizHtml += `<div class="matrix-step">
+                <div class="step-title">
+                    <span class="step-number">1</span>
+                    Calculate Inverse Key Matrix
+                </div>
+                <div class="matrix-operation">
+                    <div class="matrix-container">
+                        <div class="matrix-label">Original Key Matrix</div>
+                        <div>${matrixToHtml(keyMatrix)}</div>
+                    </div>
+                    <div class="operation-symbol">→</div>
+                    <div class="matrix-container">
+                        <div class="matrix-label">Inverse Key Matrix (mod 26)</div>
+                        <div>${matrixToHtml(matrixModInverse(keyMatrix, modulus))}</div>
+                    </div>
+                </div>
+            </div>`;
+            usedMatrix = matrixModInverse(keyMatrix, modulus);
+        }
+        
+        // Process each text block
+        let allOutput = [];
+        for (let blockIdx = 0; blockIdx < vectors.length; blockIdx++) {
+            let block = vectors[blockIdx];
+            let blockLetters = clean.substr(blockIdx*size, size).split('');
+            let outputVec = [];
+            
+            // Calculate output vector
+            for (let row = 0; row < size; row++) {
+                let sum = 0;
+                for (let col = 0; col < size; col++) {
+                    sum += usedMatrix[row][col] * block[col];
+                }
+                let modded = ((sum % modulus) + modulus) % modulus;
+                outputVec.push(modded);
+            }
+            allOutput.push(...outputVec);
+            
+            // Create visualization for this block
+            vizHtml += `<div class="matrix-step">
+                <div class="step-title">
+                    <span class="step-number">${operation === 'decrypt' ? blockIdx + 2 : blockIdx + 1}</span>
+                    Process Block ${blockIdx + 1}: "${blockLetters.join('')}"
+                </div>
+                <div class="matrix-operation">
+                    <div class="matrix-container">
+                        <div class="matrix-label">${operation === 'decrypt' ? 'Inverse ' : ''}Key Matrix</div>
+                        <div>${matrixToHtml(usedMatrix)}</div>
+                    </div>
+                    <div class="operation-symbol">×</div>
+                    <div class="matrix-container">
+                        <div class="matrix-label">${operation === 'decrypt' ? 'Ciphertext' : 'Plaintext'} Vector</div>
+                        <div style="display: flex; align-items: center; gap: 1rem; justify-content: center;">
+                            <div>${matrixToHtml(block.map(x=>[x]), -1, -1, 'cell', true)}</div>
+                            <div style="display: flex; flex-direction: column; gap: 0.3rem;">
+                                ${blockLetters.map(l=>`<span style='color:#ff3333;font-weight:600;font-size:1rem;padding:0.2rem 0.5rem;background:rgba(255,0,0,0.1);border-radius:4px;'>${l}</span>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="operation-symbol">=</div>
+                    <div class="matrix-container">
+                        <div class="matrix-label">Result Vector</div>
+                        <div style="display: flex; align-items: center; gap: 1rem; justify-content: center;">
+                            <div>${matrixToHtml(outputVec.map(x=>[x]), -1, -1, 'cell', true)}</div>
+                            <div style="display: flex; flex-direction: column; gap: 0.3rem;">
+                                ${outputVec.map(n=>`<span style='color:#00ff99;font-weight:600;font-size:1rem;padding:0.2rem 0.5rem;background:rgba(0,255,153,0.1);border-radius:4px;'>${String.fromCharCode(n+65)}</span>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        }
+        
+        // Final result display
+        let cipherText = allOutput.map(n=>String.fromCharCode(n+65)).join('');
+        vizHtml += `<div class="result-highlight">
+            <div style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--light-color);">
+                <i class="fas fa-check-circle"></i> Final ${operation === 'decrypt' ? 'Plaintext' : 'Ciphertext'}
+            </div>
+            <div class="result-text">"${cipherText}"</div>
+        </div>`;
+        
+        hillKeyMatrix.innerHTML = vizHtml;
+        hillMessageVectors.innerHTML = '';
+        hillResultVectors.innerHTML = '';
+        visualizationInfo.textContent = `Matrix multiplication performed on ${vectors.length} block${vectors.length !== 1 ? 's' : ''} of ${size} characters each. All calculations are done modulo 26.`;
+        visualizationInfo.classList.add('active');
+    }
+    function processCipher() {
+        const message = messageInput.value;
+        let size;
+        let keyMatrix;
+        const operation = operationSelect.value;
+        if (!message) {
+            showNotification('Please enter a message to process.', 'error');
+            return;
+        }
+        if (keyInputMethod.value === 'matrix') {
+            size = parseInt(matrixDimensionSelect.value, 10);
+            keyMatrix = getMatrixFromInputs(size);
+            if (!keyMatrix) {
+                showNotification('Please fill all matrix values.', 'error');
+                return;
+            }
+        } else {
+            const word = keyWordInput.value;
+            if (!word) {
+                showNotification('Please enter a key word.', 'error');
+                return;
+            }
+            // Let user choose dimension for word as well
+            size = 2;
+            if (word.length >= 9) size = 3;
+            if (word.length >= 4 && word.length < 9) size = 2;
+            // Or, optionally, let user pick dimension for word too (add a select if needed)
+            keyMatrix = getKeyMatrixFromWord(word, size);
+        }
+        if (operation === 'decrypt') {
+            let det = matrixDeterminant(keyMatrix);
+            if (modInverse(det, 26) === null) {
+                showNotification('Key matrix is not invertible modulo 26.', 'error');
+                return;
+            }
+        }
+        let result = hillCipher(message, keyMatrix, operation);
+        if (result === null) {
+            showNotification('Key matrix is not invertible modulo 26.', 'error');
+            return;
+        }
+        resultOutput.textContent = result;
+        resultSection.style.display = 'block';
+        visualizeHillCipher(message, keyMatrix, operation, result);
+        resultSection.scrollIntoView({ behavior: 'smooth' });
+    }
+    keyInputMethod.addEventListener('change', function() {
+        if (this.value === 'matrix') {
+            matrixRow.style.display = '';
+            matrixGroup.style.display = '';
+            wordGroup.style.display = 'none';
+        } else {
+            matrixRow.style.display = 'none';
+            matrixGroup.style.display = 'none';
+            wordGroup.style.display = '';
+        }
+    });
+    renderMatrixInput(parseInt(matrixDimensionSelect.value, 10));
+    function getKeyMatrixFromWord(word, size) {
+        word = word.toUpperCase().replace(/[^A-Z]/g, '');
+        let needed = size * size;
+        if (word.length < needed) {
+            word += 'X'.repeat(needed - word.length);
+        } else if (word.length > needed) {
+            word = word.slice(0, needed);
+        }
+        let keyNumbers = Array.from(word).map(c => c.charCodeAt(0) - 65);
+        let matrix = [];
+        for (let i = 0; i < size; i++) {
+
+            matrix.push(keyNumbers.slice(i * size, (i + 1) * size));
+        }
+        return matrix;
+    }    function clearAll() {
+        messageInput.value = '';
+        renderMatrixInput(parseInt(matrixDimensionSelect.value, 10));
+        operationSelect.value = 'encrypt';
+        keyInputMethod.value = 'matrix';
+        matrixRow.style.display = '';
+        matrixGroup.style.display = '';
+        wordGroup.style.display = 'none';
+        keyWordInput.value = '';
+        resultOutput.textContent = '';
+        resultSection.style.display = 'none';
+        hillKeyMatrix.innerHTML = '';
+        hillMessageVectors.innerHTML = '';
+        hillResultVectors.innerHTML = '';
+        visualizationInfo.innerHTML = '<i class="fas fa-lightbulb"></i> Enter your message and click "Process" to see the step-by-step matrix multiplication';
+        visualizationInfo.classList.remove('active');
+    }
+    function copyToClipboard() {
+        const result = resultOutput.textContent;
+        if (!result) {
+            showNotification('No result to copy.', 'error');
+            return;
+        }
+        navigator.clipboard.writeText(result)
+            .then(() => {
+                showNotification('Result copied to clipboard!', 'success');
+            })
+            .catch(err => {
+                showNotification('Failed to copy: ' + err, 'error');
+            });
+ }
+    function showNotification(message, type) {
+        notification.textContent = message;
+        notification.className = 'notification ' + type;
+        notification.style.display = 'block';
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateY(-10px)';
+        setTimeout(() => {
+            notification.style.opacity = '1';
+
+            notification.style.transform = 'translateY(0)';
+        }, 10);
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            notification.style.transform = 'translateY(-10px)';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 300);
+        }, 3000);
+    }
+    processBtn.addEventListener('click', processCipher);
+    clearBtn.addEventListener('click', clearAll);
+    copyBtn.addEventListener('click', copyToClipboard);
+});
+    </script>
+</body>
+</html>
